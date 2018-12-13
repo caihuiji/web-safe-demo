@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>防范：html-encode</title>
+</head>
+<body>
+
+<div id="test"></div>
+
+<script>
+
+    var htmlEscape = function(str) {
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    };
+
+    var htmlUnescape = function(value) {
+        return String(value)
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, "'")
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&amp;/g, '&');
+    };
+
+    //这是一个从后台读取的数据
+    var renderText = '<img src="404.html" onerror="alert(\'xss\')" />'
+    var $test = document.querySelector('#test');
+    $test.innerHTML = htmlEscape(renderText);
+</script>
+</body>
+</html>
