@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>反射型</title>
+</head>
+<body>
+<div id="test"></div>
+
+<script>
+   // #<img src="404.html" onerror="alert('xss')" />
+    var $test = document.querySelector('#test');;
+    $test.innerHTML = decodeURIComponent(window.location.hash);
+</script>
+</body>
+</html>

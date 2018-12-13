@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>存储型</title>
+</head>
+<body>
+
+<div id="test"></div>
+
+<script>
+    //这是一个从后台读取的数据
+    var renderText = '<img src="404.html" onerror="alert(\'xss\')" />'
+    var $test = document.querySelector('#test');
+    $test.innerHTML = renderText;
+</script>
+</body>
+</html>
