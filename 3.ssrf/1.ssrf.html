@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ssrf</title>
+</head>
+<body>
+提交一个图片地址，服务器帮转为png格式。<br>
+1. 服务器拉取图片<br>
+2. 假如提交的图片是 http://127.0.0.1<br>
+<br>
+<form target="csrf-form" method="post" action="http://127.0.0.1:3001/csrf">
+    <input name="name" value="1111">
+    <input type="submit" value="提交">
+</form>
+</body>
+</html>

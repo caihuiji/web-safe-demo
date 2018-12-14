@@ -1,75 +1,41 @@
 const http = require('http');
 const fs = require('fs');
 
-var JavaScriptEncode = function(str){
+var spCharCodes = '[\\u0000-\\u001F]|\\u00F1|\\u000B|\\u000C|\\u00A0|\\uFEFF|\\u1680|\\u180E|[\\u2000-\\u200F]|\\u2028|\\u2029|\\u202F|\\u205F|\\u3000';
+var norCharStr = '\'|"|>|<';
 
-    var hex=new Array('0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f');
+var JavaScriptEncode = (function(str){
 
-    // 转16进制
-    function changeTo16Hex(charCode){
-        return "\\x" + charCode.charCodeAt(0).toString(16);
-    }
+    var norChar = '\\n|\\r|\\\\|'+norCharStr;
+    var reg = new RegExp(norChar+'|'+spCharCodes, 'g');
 
-    function encodeCharx(original) {
-
-        var found = true;
-        var thecharchar = original.charAt(0);
-        var thechar = original.charCodeAt(0);
-        switch(thecharchar) {
-            case '\n': return "\\n"; break; //newline
-            case '\r': return "\\r"; break; //Carriage return
-            case '\'': return "\\'"; break;
-            case '"': return "\\\""; break;
-            case '\&': return "\\&"; break;
-            case '\\': return "\\\\"; break;
-            case '\t': return "\\t"; break;
-            case '\b': return "\\b"; break;
-            case '\f': return "\\f"; break;
-            case '/': return "\\x2F"; break;
-            case '<': return "\\x3C"; break;
-            case '>': return "\\x3E"; break;
-            default:
-                found=false;
-                break;
+    var escapeMap = {};
+    norChar.split('|').forEach(function(str)
+    {
+        if (str == '<')
+        {
+            // 防</script> xss
+            escapeMap[str] = '\\u003c';
         }
-        if(!found){
-            if(thechar > 47 && thechar < 58){ //数字
-                return original;
-            }
-
-            if(thechar > 64 && thechar < 91){ //大写字母
-                return original;
-            }
-
-            if(thechar > 96 && thechar < 123){ //小写字母
-                return original;
-            }
-
-            if(thechar>127) { //大于127用unicode
-                var c = thechar;
-                var a4 = c%16;
-                c = Math.floor(c/16);
-                var a3 = c%16;
-                c = Math.floor(c/16);
-                var a2 = c%16;
-                c = Math.floor(c/16);
-                var a1 = c%16;
-                return "\\u"+hex[a1]+hex[a2]+hex[a3]+hex[a4]+"";
-            }
-            else {
-                return changeTo16Hex(original);
-            }
-
+        else if (str.length == 1)
+        {
+            escapeMap[str] = '\\'+str;
         }
-    }
+        else if (str.length == 2 && str[0] == '\\')
+        {
+            escapeMap[eval('"'+str+'"')] = str;
+        }
+    });
 
-    var preescape = str;
-    var escaped = "";
-    for(var i=0; i < preescape.length; i++){
-        escaped = escaped + encodeCharx(preescape.charAt(i));
+    function rp(str) {
+        return escapeMap[str] || '\\u'+zeroize(str.charCodeAt(0).toString(16), 4, 0);
     }
-    return escaped;
-}
+    return function(str) {
+        if (str === null || str === undefined || typeof str == 'function') return '';
+
+        return (''+str).replace(reg, rp);
+    };
+}())
 
 const proxy = http.createServer((req, res) => {
 

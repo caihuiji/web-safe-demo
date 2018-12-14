@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>防范：白名单过滤</title>
+    <script src="./lib/xss_filter.js"></script>
+</head>
+<body>
+
+<div id="rich-text" contenteditable="true" style="width:300px;height:300px;border:1px solid black;">
+
+</div>
+<button id="submit">提交</button>
+<br/>
+显示：
+<div id="test">
+
+</div>
+
+<script>
+
+    var $richText = document.querySelector('#rich-text');
+    var $submit = document.querySelector('#submit');
+    var $test = document.querySelector('#test');
+
+    $submit.addEventListener('click' , function (){
+        $test.innerHTML =  filterXSS($richText.innerText) ;
+    })
+
+</script>
+</body>
+</html>
